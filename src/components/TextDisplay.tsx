@@ -40,7 +40,8 @@ const TextDisplay: React.FC = () => {
 export default TextDisplay;
 
 const TextWrapper = styled.div`
-  border: 1px solid;
+  box-shadow: 0 0 5px 1px var(--main-color);
+  border-radius: 1rem;
   display: flex;
   flex-wrap: wrap;
   font-size: 24px;
