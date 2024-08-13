@@ -1,11 +1,15 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../store";
 import { incrementErrors, setEndTime, setStartTime, setUserInput, } from "../store/typingSlice";
+import styled from "styled-components";
 
 const TextInput: React.FC = () => {
   const dispatch = useDispatch();
-  const { userInput, text, startTime, endTime } = useSelector((state: RootState) => state.typing);
+  const { userInput, text, startTime, endTime } = useSelector(
+    (state: RootState) => state.typing
+  );
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const handleKeyDown = (e: KeyboardEvent) => {
     e.preventDefault();
@@ -39,13 +43,25 @@ const TextInput: React.FC = () => {
   };
 
   useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
     window.addEventListener("keydown", handleKeyDown);
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
   }, [userInput, text, startTime]);
 
-  return null; // Убирает видимое поле ввода
+  return (
+    <InputHidden ref={inputRef} type="text" readOnly={text === userInput} />
+  );
 };
 
 export default TextInput;
+
+const InputHidden = styled.input`
+  position: absolute;
+  opacity: 0;
+  bottom: 0;
+  right: 0;
+`;
