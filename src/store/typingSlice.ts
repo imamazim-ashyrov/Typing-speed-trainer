@@ -33,11 +33,9 @@ const typingSlice = createSlice({
       state.errors += 1;
     },
     setStartTime: (state, action: PayloadAction<number>) => {
-      console.log("Typing Started");
       state.startTime = action.payload;
     },
     setEndTime: (state, action: PayloadAction<number>) => {
-      console.log("Typing End");
       state.endTime = action.payload;
     },
     setNewText: (state) => {

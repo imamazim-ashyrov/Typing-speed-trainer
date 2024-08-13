@@ -11,7 +11,6 @@ const textData = [
   "The 45 long jump foxed by a very big wizard.",
 ];
 
-console.log("textData");
 
 
 export const getRandomText = (): string => {

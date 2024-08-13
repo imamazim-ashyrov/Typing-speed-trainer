@@ -47,6 +47,7 @@ const TextWrapper = styled.div`
   font-size: 24px;
   padding: 2em;
   white-space: pre-wrap;
+  margin: 0 1em;
 
   @media (max-width: 500px) {
     font-size: 18px;
