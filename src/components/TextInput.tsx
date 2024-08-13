@@ -1,17 +1,15 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../store";
-import { incrementErrors, setEndTime, setStartTime, setUserInput, } from "../store/typingSlice";
-import styled from "styled-components";
+import { incrementErrors, setEndTime, setOnFocus, setStartTime, setUserInput, } from "../store/typingSlice";
 
 const TextInput: React.FC = () => {
   const dispatch = useDispatch();
-  const { userInput, text, startTime, endTime } = useSelector(
+  const { focusInput, userInput, text, startTime, endTime } = useSelector(
     (state: RootState) => state.typing
   );
-  const inputRef = useRef<HTMLInputElement>(null);
 
-  const handleKeyDown = (e: KeyboardEvent) => {
+  const handleChange = (e: KeyboardEvent) => {
     e.preventDefault();
 
     if (endTime !== null) {
@@ -38,30 +36,21 @@ const TextInput: React.FC = () => {
 
       if (userInput + key === text) {
         dispatch(setEndTime(Date.now()));
+        dispatch(setOnFocus(false));
       }
     }
   };
 
   useEffect(() => {
-    if (inputRef.current) {
-      inputRef.current.focus();
+    if (focusInput) {
+      window.addEventListener("keydown", handleChange);
+      return () => {
+        window.removeEventListener("keydown", handleChange);
+      };
     }
-    window.addEventListener("keydown", handleKeyDown);
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [userInput, text, startTime]);
+  }, [focusInput, userInput]);
 
-  return (
-    <InputHidden ref={inputRef} type="text" readOnly={text === userInput} />
-  );
+  return null;
 };
 
 export default TextInput;
-
-const InputHidden = styled.input`
-  position: absolute;
-  opacity: 0;
-  bottom: 0;
-  right: 0;
-`;

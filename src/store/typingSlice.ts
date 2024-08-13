@@ -2,6 +2,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { getRandomText } from "../textData";
 
 interface TypingState {
+  focusInput: boolean;
   text: string;
   userInput: string;
   errors: number;
@@ -10,6 +11,7 @@ interface TypingState {
 }
 
 const initialState: TypingState = {
+  focusInput: false,
   text: getRandomText(),
   userInput: "",
   errors: 0,
@@ -21,6 +23,9 @@ const typingSlice = createSlice({
   name: "typing",
   initialState,
   reducers: {
+    setOnFocus: (state, action: PayloadAction<boolean>) => {
+      state.focusInput = action.payload;
+    },
     setUserInput: (state, action: PayloadAction<string>) => {
       state.userInput = action.payload;
     },
@@ -38,6 +43,7 @@ const typingSlice = createSlice({
     setNewText: (state) => {
       return {
         ...state,
+        focusInput: true,
         text: getRandomText(),
         startTime: null,
         endTime: null,
@@ -49,6 +55,7 @@ const typingSlice = createSlice({
 });
 
 export const {
+  setOnFocus,
   setUserInput,
   incrementErrors,
   setStartTime,

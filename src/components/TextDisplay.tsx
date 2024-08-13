@@ -1,14 +1,17 @@
 import React from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../store";
 import styled from "styled-components";
+import { setOnFocus } from "../store/typingSlice";
 
 const TextDisplay: React.FC = () => {
-  const { text, userInput } = useSelector((state: RootState) => state.typing);
+  const dispatch = useDispatch();
+  const { focusInput, text, userInput } = useSelector((state: RootState) => state.typing);
 
   const renderText = () => {
     return text.split("").map((char, index) => {
-      const isCurrent = index === userInput.length ? "true" : "false";
+      const isCurrent =
+        index === userInput.length && focusInput ? "true" : "false";
       const color =
         index < userInput.length
           ? char === userInput[index]
@@ -27,12 +30,17 @@ const TextDisplay: React.FC = () => {
     });
   };
 
-  return <TextWrapper>{renderText()}</TextWrapper>;
+  return (
+    <TextWrapper onClick={() => dispatch(setOnFocus(true))} >
+      {renderText()}
+    </TextWrapper>
+  );
 };
 
 export default TextDisplay;
 
 const TextWrapper = styled.div`
+  border: 1px solid;
   display: flex;
   flex-wrap: wrap;
   font-size: 24px;
