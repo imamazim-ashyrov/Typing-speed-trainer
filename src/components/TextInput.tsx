@@ -1,56 +1,61 @@
-import React, { useEffect } from "react";
+import React, { ChangeEvent, useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../store";
-import { incrementErrors, setEndTime, setOnFocus, setStartTime, setUserInput, } from "../store/typingSlice";
+import { incrementErrors, setEndTime, setOnFocus, setStartTime, setUserInput } from "../store/typingSlice";
+import styled from "styled-components";
 
 const TextInput: React.FC = () => {
   const dispatch = useDispatch();
   const { focusInput, userInput, text, startTime, endTime } = useSelector(
     (state: RootState) => state.typing
   );
+  const inputRef = useRef<HTMLInputElement>(null);
 
-  const handleChange = (e: KeyboardEvent) => {
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
 
-    if (endTime !== null) {
-      return;
-    }
+    if (endTime !== null) return;
 
-    const { key } = e;
+    const { value } = e.target;
 
-    if (key === "Backspace") {
-      dispatch(setUserInput(userInput.slice(0, -1)));
-      return;
-    }
+    if (userInput === "" && value === " ") return;
 
-    if (key.length === 1) {
-      if (startTime === null) {
-        dispatch(setStartTime(Date.now()));
-      }
+    if (startTime === null) dispatch(setStartTime(Date.now()));
 
-      if (key !== text[userInput.length]) {
-        dispatch(incrementErrors());
-      }
+    if (value[userInput.length] !== text[userInput.length]) dispatch(incrementErrors());
 
-      dispatch(setUserInput(userInput + key));
+    dispatch(setUserInput(value));
 
-      if (userInput + key === text) {
-        dispatch(setEndTime(Date.now()));
-        dispatch(setOnFocus(false));
-      }
+    if (value === text) {
+      dispatch(setEndTime(Date.now()));
+      dispatch(setOnFocus(false));
     }
   };
 
+  const handleBlur = () => {
+    dispatch(setOnFocus(false));
+  };
+
   useEffect(() => {
-    if (focusInput) {
-      window.addEventListener("keydown", handleChange);
-      return () => {
-        window.removeEventListener("keydown", handleChange);
-      };
-    }
+    if (inputRef.current && focusInput) inputRef.current.focus();
   }, [focusInput, userInput]);
 
-  return null;
+  return (
+    <InputStyled
+      value={userInput}
+      ref={inputRef}
+      onChange={handleChange}
+      onBlur={handleBlur}
+      type="text"
+    />
+  );
 };
 
 export default TextInput;
+
+const InputStyled = styled.input`
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  opacity: 0;
+`;
